@@ -38,6 +38,33 @@ This fragmentation causes operational latency, check-in bottlenecks, unmonitored
 
 ---
 
+## Authentication
+
+Authentication in **EVENTOPS** is built using **Supabase Auth** with a centralized `AuthContext` service abstraction (`src/services/auth/authService.js`):
+
+- **Session Handling**: Restores sessions seamlessly on refresh (`supabase.auth.getSession()` and `onAuthStateChange`). Prevents protected view flashing during session hydration.
+- **Profiles Data Model**: User accounts map directly to `public.profiles` (`id`, `name`, `email`, `role`, `created_at`).
+- **Role-Based Authorization**: Client routing is strictly protected by `ProtectedRoute` components. Unauthenticated requests redirect to `/login`. Unauthorized role attempts (e.g. a `PARTICIPANT` attempting to open `/organizer/*`) render a dedicated **HTTP 403 Access Denied** state (`src/pages/auth/UnauthorizedPage.jsx`).
+
+---
+
+## Security
+
+- **Environment Variables**: Supabase credentials are read strictly from `.env` via `import.meta.env.VITE_SUPABASE_URL` and `import.meta.env.VITE_SUPABASE_ANON_KEY`. Credentials are never hardcoded or committed.
+- **Row Level Security (RLS)**: Production schema script in `supabase/schema.sql` enforces RLS policies on `public.profiles` using `auth.uid()` checks (users can only read/update their own profile; Organizers have elevated read access).
+- **Role Escalation Prevention**: `validateRole(role)` restricts valid roles to `ORGANIZER`, `JUDGE`, or `PARTICIPANT`. Arbitrary role strings are rejected.
+- **Score & Input Validation**: Strict numeric bound checking (0.0 to 10.0) on rubric submissions and email format verification.
+- **Git & Asset Hygiene**: `.gitignore` strictly excludes `.env`, `node_modules`, `dist`, and binary build output, maintaining repository size < 10 MB.
+
+---
+
+## Authentication Assumptions
+
+- **Public Self-Registration**: Public users can self-register as `PARTICIPANT` or `JUDGE`. Public registration as `ORGANIZER` is restricted to prevent arbitrary privilege escalation. Organizer accounts are pre-provisioned.
+- **Interactive Demo Mode**: For competition presentation and judging evaluation, a top bar `RoleSwitcher` permits instant persona switching. In production, `isDemoMode` is toggled off and strict JWT session authorization is enforced.
+
+---
+
 ## Core Features
 
 - **Live Command Telemetry**: Real-time stats for venue check-ins, open support requests, and judging completion.
@@ -55,60 +82,31 @@ This fragmentation causes operational latency, check-in bottlenecks, unmonitored
 src/
 ├── components/
 │   ├── ui/          # Accessible UI primitives (Button, Card, Badge, StatCard, Input, Modal, Alert)
-│   ├── shared/      # AppShell, TopNavbar, SidebarNav, RoleSwitcher
+│   ├── shared/      # AppShell, TopNavbar, SidebarNav, RoleSwitcher, ProtectedRoute
 │   ├── organizer/   # Command center widgets
 │   ├── participant/ # Participant pass & matchmaking components
 │   └── judge/       # Rubric scoring & evaluation components
+├── context/         # AuthContext session & profile state provider
 ├── pages/
 │   ├── organizer/   # Command Center, CheckIn, SupportQueue, Announcements, Leaderboard, Health
 │   ├── participant/ # Dashboard, Pass, Schedule, Matchmaking, Helpdesk, Announcements
 │   ├── judge/       # Dashboard, Submissions, Evaluation, Leaderboard
-│   └── auth/        # LoginPage
-├── services/        # Clean service abstraction layer (Auth, Event, CheckIn, Support, Judging, Announcements)
+│   └── auth/        # LoginPage, SignUpPage, UnauthorizedPage (403)
+├── services/        # Service layer (Auth, Event, CheckIn, Support, Judging, Announcements)
 ├── utils/           # Business logic engines (matching.js, scoring.js, eventHealth.js, validation.js, permissions.js)
-├── hooks/           # useRole context hook for demo role switching
+├── hooks/           # useAuth and useRole context hooks
 ├── data/            # Seed data representing live hackathon telemetry
 ├── lib/             # Supabase client abstraction with safe local fallback
-└── tests/           # Vitest unit test suite
+├── tests/           # Vitest unit test suite (including auth & security tests)
+└── supabase/        # RLS schema & migration SQL scripts
 ```
-
----
-
-## Application Flow
-
-1. **Gate Verification**: Attendee presents QR Pass → Organizer scans pass → Check-in log updates → Telemetry counter increments → Attendance rate recalculates.
-2. **Support Ticket Triage**: Participant submits issue → Organizer Support Queue alerts → Event Health Index recalculates based on backlog.
-3. **Rubric Evaluation**: Judge inputs scores → Weighted score calculated → Team aggregate updates → Live Leaderboard rank recalculates.
-
----
-
-## Decision-Making Logic
-
-- **Weighted Scoring Formula**:
-  $$\text{Total Score} = \sum (\text{Criteria Score}_i \times \text{Weight}_i)$$
-- **Team Compatibility Score**:
-  - Skill Overlap: 40%
-  - Preferred Role Fit: 30%
-  - Track / Interests: 30%
-- **Event Health Index**:
-  - Starts at 100
-  - -10 pts per high-priority support ticket
-  - -15 pts if venue check-in velocity is below 40% threshold
-
----
-
-## Security
-
-- **Environment Variables**: Supabase credentials are read strictly from `.env` via `import.meta.env`.
-- **Role-Based Access Guard**: Route access checked via `hasPermission(role, permission)`.
-- **Score Validation**: Strict numeric bound checks (0.0 to 10.0) on all rubric submissions.
-- **Git Hygiene**: `.gitignore` strictly prevents committing `.env`, `node_modules`, or build artifacts.
 
 ---
 
 ## Testing
 
 Automated unit tests powered by **Vitest**:
+- `auth.test.js` — Role validation, credential format checking, RBAC permission isolation
 - `matching.test.js` — Team compatibility algorithm validation
 - `scoring.test.js` — Rubric score calculator & leaderboard rank compiler
 - `eventHealth.test.js` — Health index score & recommendation generator
@@ -198,11 +196,3 @@ This repository includes a multi-stage `Dockerfile` ready for Google Cloud Run d
      --allow-unauthenticated \
      --port 8080
    ```
-
----
-
-## Future Scope
-
-- Native WebRTC live QR camera scanning engine.
-- Supabase Row Level Security (RLS) policies for multi-tenant organizations.
-- Automated SMS / Push notification dispatch via Twilio / Firebase.

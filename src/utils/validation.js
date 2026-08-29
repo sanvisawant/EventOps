@@ -1,3 +1,5 @@
+import { ROLES } from './permissions';
+
 /**
  * Validates score inputs against min/max rubric bounds
  */
@@ -10,6 +12,44 @@ export function validateScore(score, min = 0, max = 10) {
     return { isValid: false, error: `Score must be between ${min} and ${max}` };
   }
   return { isValid: true, value: numeric };
+}
+
+/**
+ * Validates allowed user roles to prevent arbitrary escalation
+ */
+export function validateRole(role) {
+  const allowedRoles = Object.values(ROLES);
+  if (!role || !allowedRoles.includes(role)) {
+    return { isValid: false, error: 'Invalid role selection. Must be PARTICIPANT, JUDGE, or ORGANIZER.' };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validates email format
+ */
+export function validateEmail(email) {
+  if (!email || typeof email !== 'string') {
+    return { isValid: false, error: 'Email address is required.' };
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    return { isValid: false, error: 'Please enter a valid email address.' };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validates password strength and confirmation match
+ */
+export function validatePasswordMatch(password, confirmPassword) {
+  if (!password || password.length < 6) {
+    return { isValid: false, error: 'Password must be at least 6 characters long.' };
+  }
+  if (password !== confirmPassword) {
+    return { isValid: false, error: 'Passwords do not match.' };
+  }
+  return { isValid: true };
 }
 
 /**

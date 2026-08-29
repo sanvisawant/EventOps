@@ -1,24 +1,52 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { Select } from '../../components/ui/Select';
-import { useRole } from '../../hooks/useRole';
-import { Activity, ShieldCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Alert } from '../../components/ui/Alert';
+import { useAuth } from '../../context/AuthContext';
+import { validateEmail } from '../../utils/validation';
+import { Activity, ShieldCheck, Layers } from 'lucide-react';
 
 export function LoginPage() {
-  const { switchRole, ROLES } = useRole();
+  const { login, getDefaultRouteForRole, isDemoMode, toggleDemoMode, ROLES } = useAuth();
   const navigate = useNavigate();
-  const [role, setRole] = useState(ROLES.ORGANIZER);
-  const [email, setEmail] = useState('sanvi.organizer@eventops.io');
 
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState('sanvi.organizer@eventops.io');
+  const [password, setPassword] = useState('password123');
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    switchRole(role);
-    if (role === ROLES.ORGANIZER) navigate('/organizer');
-    else if (role === ROLES.JUDGE) navigate('/judge');
-    else navigate('/participant');
+    setError(null);
+
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) {
+      setError(emailVal.error);
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter your password.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const res = await login({ email, password });
+      const targetRole = res.profile?.role || ROLES.ORGANIZER;
+      navigate(getDefaultRouteForRole(targetRole));
+    } catch (err) {
+      setError(err.message || 'Invalid login credentials.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEnterDemoMode = () => {
+    if (!isDemoMode) toggleDemoMode();
+    navigate('/organizer');
   };
 
   return (
@@ -36,30 +64,61 @@ export function LoginPage() {
           </p>
         </div>
 
-        <Card title="Command Console Authentication" subtitle="Select demo role session">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Select
-              label="Select Access Role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              options={[
-                { label: 'Organizer Command Director', value: ROLES.ORGANIZER },
-                { label: 'Event Participant', value: ROLES.PARTICIPANT },
-                { label: 'Evaluator / Judge', value: ROLES.JUDGE },
-              ]}
-            />
+        <Card title="Console Authentication" subtitle="Sign in to your account">
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            {error && <Alert variant="danger">{error}</Alert>}
 
             <Input
               label="Email Address"
               type="email"
+              placeholder="name@eventops.io"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
-            <Button type="submit" variant="primary" className="w-full" icon={ShieldCheck}>
-              Enter EVENTOPS Console
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              icon={ShieldCheck}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Authenticating...' : 'Sign In to Console'}
             </Button>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+              <span className="text-slate-400">Don't have an account?</span>
+              <Link to="/signup" className="text-indigo-400 hover:underline font-semibold">
+                Create Account
+              </Link>
+            </div>
           </form>
+
+          {/* Competition Demo Mode Shortcut */}
+          <div className="mt-4 pt-4 border-t border-dashed border-slate-800 text-center space-y-2">
+            <div className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+              Hackathon Judging Shortcut:
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs font-mono text-indigo-300"
+              icon={Layers}
+              onClick={handleEnterDemoMode}
+            >
+              Enter Interactive Demo Mode
+            </Button>
+          </div>
         </Card>
       </div>
     </div>

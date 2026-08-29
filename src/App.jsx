@@ -1,9 +1,15 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { RoleProvider, useRole } from './hooks/useRole';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { ProtectedRoute } from './components/shared/ProtectedRoute';
 import { AppShell } from './components/shared/AppShell';
 
-// Pages
+// Auth Pages
+import { LoginPage } from './pages/auth/LoginPage';
+import { SignUpPage } from './pages/auth/SignUpPage';
+import { UnauthorizedPage } from './pages/auth/UnauthorizedPage';
+
+// Organizer Pages
 import { OrganizerDashboardPage } from './pages/organizer/OrganizerDashboardPage';
 import { CheckInPage } from './pages/organizer/CheckInPage';
 import { SupportQueuePage } from './pages/organizer/SupportQueuePage';
@@ -11,6 +17,7 @@ import { AnnouncementsPage } from './pages/organizer/AnnouncementsPage';
 import { LeaderboardPage } from './pages/organizer/LeaderboardPage';
 import { HealthPage } from './pages/organizer/HealthPage';
 
+// Participant Pages
 import { ParticipantDashboardPage } from './pages/participant/ParticipantDashboardPage';
 import { EventPassPage } from './pages/participant/EventPassPage';
 import { SchedulePage } from './pages/participant/SchedulePage';
@@ -19,163 +26,200 @@ import { HelpdeskPage } from './pages/participant/HelpdeskPage';
 import { ParticipantAnnouncementsPage } from './pages/participant/ParticipantAnnouncementsPage';
 import { ParticipantLeaderboardPage } from './pages/participant/ParticipantLeaderboardPage';
 
+// Judge Pages
 import { JudgeDashboardPage } from './pages/judge/JudgeDashboardPage';
 import { SubmissionsPage } from './pages/judge/SubmissionsPage';
 import { EvaluationPage } from './pages/judge/EvaluationPage';
 import { JudgeLeaderboardPage } from './pages/judge/JudgeLeaderboardPage';
 
-import { LoginPage } from './pages/auth/LoginPage';
-import { getDefaultRouteForRole } from './utils/permissions';
-
 function RootRedirect() {
-  const { activeRole } = useRole();
+  const { activeRole, getDefaultRouteForRole } = useAuth();
   return <Navigate to={getDefaultRouteForRole(activeRole)} replace />;
 }
 
 export function AppRoutes() {
+  const { ROLES } = useAuth();
+
   return (
     <Routes>
+      {/* Public Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Organizer Routes */}
+      {/* Protected Organizer Routes */}
       <Route
         path="/organizer"
         element={
-          <AppShell>
-            <OrganizerDashboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <OrganizerDashboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/organizer/checkin"
         element={
-          <AppShell>
-            <CheckInPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <CheckInPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/organizer/support"
         element={
-          <AppShell>
-            <SupportQueuePage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <SupportQueuePage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/organizer/announcements"
         element={
-          <AppShell>
-            <AnnouncementsPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <AnnouncementsPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/organizer/leaderboard"
         element={
-          <AppShell>
-            <LeaderboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <LeaderboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/organizer/health"
         element={
-          <AppShell>
-            <HealthPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <AppShell>
+              <HealthPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
 
-      {/* Participant Routes */}
+      {/* Protected Participant Routes */}
       <Route
         path="/participant"
         element={
-          <AppShell>
-            <ParticipantDashboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <ParticipantDashboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/pass"
         element={
-          <AppShell>
-            <EventPassPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <EventPassPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/schedule"
         element={
-          <AppShell>
-            <SchedulePage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <SchedulePage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/matchmaking"
         element={
-          <AppShell>
-            <MatchmakingPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <MatchmakingPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/helpdesk"
         element={
-          <AppShell>
-            <HelpdeskPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <HelpdeskPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/announcements"
         element={
-          <AppShell>
-            <ParticipantAnnouncementsPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <ParticipantAnnouncementsPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/participant/leaderboard"
         element={
-          <AppShell>
-            <ParticipantLeaderboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+            <AppShell>
+              <ParticipantLeaderboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
 
-      {/* Judge Routes */}
+      {/* Protected Judge Routes */}
       <Route
         path="/judge"
         element={
-          <AppShell>
-            <JudgeDashboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <AppShell>
+              <JudgeDashboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/judge/submissions"
         element={
-          <AppShell>
-            <SubmissionsPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <AppShell>
+              <SubmissionsPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/judge/evaluation"
         element={
-          <AppShell>
-            <EvaluationPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <AppShell>
+              <EvaluationPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/judge/leaderboard"
         element={
-          <AppShell>
-            <JudgeLeaderboardPage />
-          </AppShell>
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <AppShell>
+              <JudgeLeaderboardPage />
+            </AppShell>
+          </ProtectedRoute>
         }
       />
 
@@ -187,8 +231,8 @@ export function AppRoutes() {
 
 export default function App() {
   return (
-    <RoleProvider>
+    <AuthProvider>
       <AppRoutes />
-    </RoleProvider>
+    </AuthProvider>
   );
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useRole } from '../../hooks/useRole';
+import { useAuth } from '../../context/AuthContext';
 import { RoleSwitcher } from './RoleSwitcher';
-import { Activity, Clock, ShieldCheck, Wifi } from 'lucide-react';
+import { Activity, Clock, ShieldCheck, Wifi, LogOut, User } from 'lucide-react';
 import { MOCK_EVENT } from '../../data/mockData';
 
 export function TopNavbar() {
-  const { activeUser, activeRole } = useRole();
+  const { activeUser, activeRole, isAuthenticated, isDemoMode, logout } = useAuth();
   const [timeString, setTimeString] = useState('');
 
   useEffect(() => {
@@ -33,9 +33,13 @@ export function TopNavbar() {
               <span className="font-extrabold text-slate-100 text-lg tracking-tight font-mono">
                 EVENTOPS
               </span>
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                LIVE
+              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                isDemoMode
+                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isDemoMode ? 'bg-amber-400' : 'bg-emerald-400'} animate-ping`} />
+                {isDemoMode ? 'DEMO MODE' : 'AUTHENTICATED'}
               </span>
             </div>
             <p className="text-[11px] text-slate-400 hidden md:block">
@@ -62,7 +66,7 @@ export function TopNavbar() {
       <div className="flex items-center gap-3">
         <RoleSwitcher />
 
-        {/* User Info */}
+        {/* User Info & Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
           <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center text-xs font-bold text-slate-200">
             {activeUser.name ? activeUser.name.charAt(0) : 'U'}
@@ -74,6 +78,16 @@ export function TopNavbar() {
               {activeRole}
             </div>
           </div>
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors ml-1"
+              title="Sign Out of Session"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </header>
