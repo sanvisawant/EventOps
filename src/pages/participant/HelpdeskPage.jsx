@@ -24,50 +24,38 @@ export function HelpdeskPage() {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
-
     const validation = validateSupportTicket({ title, category, priority });
     if (!validation.isValid) {
       setErrorMsg(Object.values(validation.errors)[0]);
       return;
     }
-
-    const newTkt = await supportService.createTicket({
-      title,
-      category,
-      priority,
-      submittedBy: activeUser.name,
-    });
-
+    const newTkt = await supportService.createTicket({ title, category, priority, submittedBy: activeUser.name });
     const updated = await supportService.getTickets();
     setTickets([...updated]);
-    setSuccessMsg(`Ticket #${newTkt.id} dispatched to Organizer Command Desk!`);
+    setSuccessMsg(`Ticket #${newTkt.id} submitted. Organizer team notified.`);
     setTitle('');
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-5 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <LifeBuoy className="w-6 h-6 text-indigo-400" />
-          Participant Support & Issue Submission
-        </h1>
-        <p className="text-sm text-slate-400">
-          Request Wi-Fi assistance, power strips, mentorship, or hardware troubleshooting directly from organizers.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Help Desk</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Request Wi-Fi support, mentorship, hardware help, or general assistance.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Ticket Submission Form */}
-        <Card title="Submit Support Request" subtitle="Dispatches to live organizer queue" className="lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Form */}
+        <Card title="New Ticket" subtitle="Sent directly to the organizer queue" className="lg:col-span-1">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label="Issue Summary"
-              placeholder="e.g. Wi-Fi disconnects in Lab 3"
+              label="Issue"
+              placeholder="e.g. Wi-Fi drops in Lab 3"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               icon={LifeBuoy}
             />
-
             <Select
               label="Category"
               value={category}
@@ -79,41 +67,41 @@ export function HelpdeskPage() {
                 { label: 'General Inquiry', value: 'General' },
               ]}
             />
-
             <Select
-              label="Priority Level"
+              label="Priority"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
               options={[
-                { label: 'HIGH (Urgent Blocker)', value: 'HIGH' },
-                { label: 'MEDIUM (Normal Request)', value: 'MEDIUM' },
-                { label: 'LOW (General Question)', value: 'LOW' },
+                { label: 'High — urgent blocker', value: 'HIGH' },
+                { label: 'Medium — normal request', value: 'MEDIUM' },
+                { label: 'Low — general question', value: 'LOW' },
               ]}
             />
-
             <Button type="submit" variant="primary" className="w-full" icon={Send}>
-              Dispatch Ticket
+              Submit Ticket
             </Button>
-
             {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
             {successMsg && <Alert variant="success">{successMsg}</Alert>}
           </form>
         </Card>
 
-        {/* Existing Support Requests */}
-        <Card title="Your Ticket Status Queue" subtitle="Updates live as organizers resolve issues" className="lg:col-span-2">
-          <div className="space-y-3">
+        {/* Ticket queue */}
+        <Card title="Your Tickets" subtitle="Status updates in real time" className="lg:col-span-2">
+          <div className="space-y-2">
             {tickets.map((t) => (
-              <div key={t.id} className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                <div className="space-y-1">
+              <div
+                key={t.id}
+                className="flex items-center justify-between p-4 rounded-md border border-[--color-border] bg-[--color-surface-2]"
+              >
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <Badge variant={t.priority === 'HIGH' ? 'danger' : 'warning'}>{t.priority}</Badge>
-                    <Badge variant="neutral">{t.category}</Badge>
-                    <span className="text-xs font-mono text-slate-500">{t.timeAgo}</span>
+                    <Badge variant={t.priority === 'HIGH' ? 'danger' : 'warning'} size="sm">{t.priority}</Badge>
+                    <Badge variant="neutral" size="sm">{t.category}</Badge>
+                    <span className="text-xs font-mono text-[--color-text-placeholder]">{t.timeAgo}</span>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-100">{t.title}</h4>
+                  <p className="text-sm font-medium text-[--color-text-primary]">{t.title}</p>
                 </div>
-                <Badge variant={t.status === 'RESOLVED' ? 'success' : 'brand'}>{t.status}</Badge>
+                <Badge variant={t.status === 'RESOLVED' ? 'success' : 'brand'} size="sm">{t.status}</Badge>
               </div>
             ))}
           </div>

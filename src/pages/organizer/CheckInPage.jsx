@@ -17,10 +17,8 @@ export function CheckInPage() {
   const handleScanSubmit = async (e) => {
     e.preventDefault();
     if (!qrCode.trim()) return;
-
     const res = await checkinService.processQrCheckIn(qrCode.trim(), 'Gate Scanner Alpha');
     setFeedback(res);
-
     if (res.success) {
       const updated = await checkinService.getCheckInLogs();
       setLogs(updated);
@@ -37,35 +35,29 @@ export function CheckInPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-            Live QR Check-In & Gate Verification
-          </h1>
-          <p className="text-sm text-slate-400">
-            Scan attendee passes or manually verify registrations. Duplicate entry attempts are blocked automatically.
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto space-y-5 pb-8">
+      <div>
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Check-in</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Scan attendee passes or manually verify registrations. Duplicate entries are blocked.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Scanner Terminal Card */}
-        <Card title="Gate Scanner Console" subtitle="Enter or scan QR code string" className="lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Scanner */}
+        <Card title="QR Scanner" subtitle="Enter or paste a QR token" className="lg:col-span-1">
           <form onSubmit={handleScanSubmit} className="space-y-4">
             <Input
-              label="Scanned QR Pass Code"
-              placeholder="e.g. EVTOPS-PASS-AARAV-7821"
+              label="QR pass code"
+              placeholder="e.g. EVTOPS-PASS-7821"
               value={qrCode}
               onChange={(e) => setQrCode(e.target.value)}
               icon={QrCode}
               autoFocus
             />
-
             <Button type="submit" variant="primary" className="w-full" icon={ShieldCheck}>
-              Process Check-In
+              Check In
             </Button>
-
             {feedback && (
               <Alert
                 variant={feedback.success ? 'success' : feedback.isDuplicate ? 'warning' : 'danger'}
@@ -77,48 +69,43 @@ export function CheckInPage() {
           </form>
         </Card>
 
-        {/* Registered Participants Verification Table */}
-        <Card title="Registered Participants Directory" subtitle="Search and verify status" className="lg:col-span-2">
+        {/* Participants directory */}
+        <Card title="Participants" subtitle="Search and select a token to fill scanner" className="lg:col-span-2">
           <div className="mb-4">
             <Input
-              placeholder="Search by name, email or QR pass ID..."
+              placeholder="Search by name, email or token…"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               icon={Search}
             />
           </div>
-
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-5 -mb-4">
             <table className="w-full text-left text-sm">
-              <thead className="text-xs uppercase bg-slate-950 text-slate-400 font-mono border-b border-slate-800">
-                <tr>
-                  <th className="px-4 py-3">Participant</th>
-                  <th className="px-4 py-3">QR Token</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Action</th>
+              <thead>
+                <tr className="border-b border-[--color-border] bg-[--color-surface-2]">
+                  {['Participant', 'Token', 'Status', ''].map((h) => (
+                    <th key={h} className="px-5 py-3 text-xs font-semibold text-[--color-text-secondary] uppercase tracking-wide">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 font-mono text-xs">
+              <tbody className="divide-y divide-[--color-border]">
                 {filteredParticipants.map((usr) => (
-                  <tr key={usr.id} className="hover:bg-slate-800/50">
-                    <td className="px-4 py-3 font-semibold text-slate-200">
-                      <div>{usr.name}</div>
-                      <div className="text-[11px] text-slate-500 font-sans">{usr.email}</div>
+                  <tr key={usr.id} className="hover:bg-[--color-surface-2] transition-colors">
+                    <td className="px-5 py-3">
+                      <p className="text-sm font-medium text-[--color-text-primary]">{usr.name}</p>
+                      <p className="text-xs text-[--color-text-secondary]">{usr.email}</p>
                     </td>
-                    <td className="px-4 py-3 text-indigo-400">{usr.qrCode}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3 text-xs font-mono text-[--color-accent]">{usr.qrCode}</td>
+                    <td className="px-5 py-3">
                       <Badge variant={usr.isCheckedIn ? 'success' : 'neutral'} size="sm">
-                        {usr.isCheckedIn ? 'CHECKED IN' : 'NOT CHECKED IN'}
+                        {usr.isCheckedIn ? 'Checked in' : 'Pending'}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => setQrCode(usr.qrCode)}
-                        icon={UserCheck}
-                      >
-                        Select Code
+                    <td className="px-5 py-3">
+                      <Button size="sm" variant="secondary" onClick={() => setQrCode(usr.qrCode)} icon={UserCheck}>
+                        Select
                       </Button>
                     </td>
                   </tr>

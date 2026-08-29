@@ -5,78 +5,64 @@ import { Button } from '../../components/ui/Button';
 import { useRole } from '../../hooks/useRole';
 import { MOCK_TEAMS } from '../../data/mockData';
 import { findBestMatchingTeams } from '../../utils/matching';
-import { Sparkles, Users, Code, Target, UserPlus } from 'lucide-react';
+import { Sparkles, Users, UserPlus } from 'lucide-react';
 
 export function MatchmakingPage() {
   const { activeUser } = useRole();
   const matchedTeams = findBestMatchingTeams(activeUser, MOCK_TEAMS);
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl mx-auto space-y-5 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-indigo-400" />
-          Smart Team Matchmaking Engine
-        </h1>
-        <p className="text-sm text-slate-400">
-          Algorithmic team compatibility based on your technical skills, role preference, and track interests.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Team Matching</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Compatible teams based on your skills, role preference, and track interests.
         </p>
       </div>
 
-      {/* User Skills Summary */}
-      <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-mono text-slate-400 uppercase">Your Profile Match Vector:</span>
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            {(activeUser.skills || ['React', 'Python', 'Tailwind']).map((skill) => (
-              <Badge key={skill} variant="brand">
-                {skill}
-              </Badge>
-            ))}
-            <Badge variant="neutral">Role: {activeUser.preferredRole || 'Frontend'}</Badge>
-          </div>
-        </div>
+      {/* Skills summary */}
+      <div className="card-base p-4 flex flex-wrap items-center gap-3">
+        <span className="text-xs text-[--color-text-secondary] font-medium">Your skills:</span>
+        {(activeUser.skills || ['React', 'Python', 'Tailwind']).map((skill) => (
+          <Badge key={skill} variant="brand" size="sm">{skill}</Badge>
+        ))}
+        <Badge variant="neutral" size="sm">Role: {activeUser.preferredRole || 'Frontend'}</Badge>
       </div>
 
-      {/* Matching Teams List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Team cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {matchedTeams.map(({ team, matchScore }) => (
-          <Card key={team.id} className="relative overflow-hidden">
+          <div key={team.id} className="card-base p-5 flex flex-col gap-4">
             <div className="flex items-start justify-between">
-              <div>
-                <Badge variant="brand">{team.track}</Badge>
-                <h3 className="text-lg font-bold text-slate-100 mt-2">{team.name}</h3>
-                <p className="text-xs text-slate-400 mt-0.5">{team.tagline}</p>
+              <div className="space-y-1.5">
+                <Badge variant="brand" size="sm">{team.track}</Badge>
+                <p className="text-base font-semibold text-[--color-text-primary]">{team.name}</p>
+                <p className="text-xs text-[--color-text-secondary]">{team.tagline}</p>
               </div>
-
-              {/* Match Score Circular Pill */}
-              <div className="text-right">
-                <div className="inline-flex flex-col items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30">
-                  <span className="text-lg font-extrabold font-mono text-indigo-400">{matchScore}%</span>
-                  <span className="text-[9px] font-mono text-indigo-300 uppercase">Match</span>
-                </div>
+              <div className="flex flex-col items-center justify-center rounded-md bg-[--color-accent-bg] border border-[--color-accent-border] px-3 py-2 min-w-14">
+                <span className="text-lg font-bold font-mono text-[--color-accent]">{matchScore}%</span>
+                <span className="text-2xs font-mono text-[--color-text-secondary] uppercase">match</span>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-800 space-y-2">
-              <div className="text-xs text-slate-300">
-                <span className="font-semibold text-slate-400">Seeking Skills: </span>
+            <div className="space-y-1.5 pt-3 border-t border-[--color-border]">
+              <p className="text-xs text-[--color-text-secondary]">
+                <span className="text-[--color-text-primary] font-medium">Seeking: </span>
                 {(team.requiredSkills || []).join(', ')}
-              </div>
-              <div className="text-xs text-slate-400 line-clamp-2">
-                {team.submission?.description || 'Building high impact submission.'}
-              </div>
+              </p>
+              <p className="text-xs text-[--color-text-secondary] line-clamp-2">
+                {team.submission?.description || 'Building a high-impact project.'}
+              </p>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-400">
-                {team.members.length} Members Registered
-              </span>
-              <Button size="sm" variant="primary" icon={UserPlus}>
-                Request Join
-              </Button>
+            <div className="flex items-center justify-between pt-2 border-t border-[--color-border]">
+              <div className="flex items-center gap-1.5 text-xs text-[--color-text-secondary]">
+                <Users className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>{team.members.length} members</span>
+              </div>
+              <Button size="sm" variant="primary" icon={UserPlus}>Request Join</Button>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

@@ -1,6 +1,6 @@
 export const MOCK_EVENT = {
-  id: 'evt_hack2skill_2026',
-  name: 'PromptWars × Abhiyantrix 2026',
+  id: 'evt_eventops_2026',
+  name: 'Tech Summit 2026',
   tagline: 'The real-time operating system for live events.',
   vertical: 'Live Event Command Center & Real-Time Orchestration',
   location: 'Innovation Hub, Building 4 & Online Hybrid',

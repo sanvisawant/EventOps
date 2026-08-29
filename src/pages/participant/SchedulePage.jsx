@@ -2,46 +2,42 @@ import React from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { MOCK_SCHEDULE } from '../../data/mockData';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 export function SchedulePage() {
   return (
-    <div className="space-y-6">
+    <div className="max-w-3xl mx-auto space-y-4 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <Calendar className="w-6 h-6 text-indigo-400" />
-          Event Schedule & Agenda
-        </h1>
-        <p className="text-sm text-slate-400">
-          Official timeline of keynote sessions, hacking sprints, support windows, and judging.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Schedule</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Official timeline of sessions, sprints, and judging.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {MOCK_SCHEDULE.map((item) => (
-          <Card key={item.id} className="relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center shrink-0 w-24">
-                  <Clock className="w-4 h-4 text-indigo-400 mx-auto mb-1" />
-                  <span className="text-xs font-mono font-bold text-slate-200">{item.time}</span>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={item.status === 'COMPLETED' ? 'success' : item.status === 'IN_PROGRESS' ? 'warning' : 'neutral'}>
-                      {item.status}
-                    </Badge>
-                    <Badge variant="brand">{item.category}</Badge>
-                  </div>
-                  <h3 className="text-base font-bold text-slate-100">{item.title}</h3>
-                  <div className="flex items-center gap-1 text-xs text-slate-400">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{item.location}</span>
-                  </div>
-                </div>
+          <div key={item.id} className="card-base p-4 flex items-start gap-4">
+            <div className="flex flex-col items-center justify-center rounded-md bg-[--color-surface-2] border border-[--color-border] p-2.5 w-20 shrink-0 text-center">
+              <Clock className="w-3.5 h-3.5 text-[--color-text-secondary] mb-1" aria-hidden="true" />
+              <span className="text-xs font-mono font-semibold text-[--color-text-primary]">{item.time}</span>
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant={item.status === 'COMPLETED' ? 'success' : item.status === 'IN_PROGRESS' ? 'warning' : 'neutral'}
+                  size="sm"
+                >
+                  {item.status.replace('_', ' ')}
+                </Badge>
+                <Badge variant="brand" size="sm">{item.category}</Badge>
+              </div>
+              <p className="text-sm font-semibold text-[--color-text-primary]">{item.title}</p>
+              <div className="flex items-center gap-1 text-xs text-[--color-text-secondary]">
+                <MapPin className="w-3 h-3 text-[--color-text-placeholder]" aria-hidden="true" />
+                <span>{item.location}</span>
               </div>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

@@ -2,60 +2,155 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────
+   Anti-flash script: sets dark class BEFORE first paint.
+   Applied via index.html inline script.
+   ─────────────────────────────────────────────────────── */
+
 @layer base {
+  /* Light theme — intentionally designed, not inverted dark */
   :root {
+    --color-bg: #f8f8f7;          /* warm neutral page background */
+    --color-surface: #ffffff;      /* card / panel surface */
+    --color-surface-2: #f1f0ee;   /* secondary surface, input bg */
+    --color-border: #e5e4e1;       /* subtle border */
+    --color-border-strong: #c8c7c4;/* slightly stronger border */
+    --color-text-primary: #1a1918; /* near-black charcoal */
+    --color-text-secondary: #6b6966;/* muted secondary text */
+    --color-text-placeholder: #a09d9a;/* placeholder text */
+    --color-accent: #4f46e5;        /* indigo-600 primary accent */
+    --color-accent-bg: #eef2ff;     /* accent background tint */
+    --color-accent-border: #c7d2fe; /* accent border */
+    --color-success: #16a34a;
+    --color-success-bg: #f0fdf4;
+    --color-success-border: #bbf7d0;
+    --color-warning: #b45309;
+    --color-warning-bg: #fffbeb;
+    --color-warning-border: #fde68a;
+    --color-danger: #dc2626;
+    --color-danger-bg: #fef2f2;
+    --color-danger-border: #fecaca;
+    --color-info: #0369a1;
+    --color-info-bg: #f0f9ff;
+    --color-info-border: #bae6fd;
+    --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.07), 0 1px 2px -1px rgba(0,0,0,0.05);
+  }
+
+  /* Dark theme — calm, sophisticated, easy on the eyes */
+  .dark {
+    --color-bg: #0d0f12;
+    --color-surface: #161a20;
+    --color-surface-2: #1e2229;
+    --color-border: #272c34;
+    --color-border-strong: #343b45;
+    --color-text-primary: #e8eaed;
+    --color-text-secondary: #8b9099;
+    --color-text-placeholder: #545c67;
+    --color-accent: #6366f1;
+    --color-accent-bg: #1e2040;
+    --color-accent-border: #3730a3;
+    --color-success: #22c55e;
+    --color-success-bg: #0d2a1a;
+    --color-success-border: #166534;
+    --color-warning: #f59e0b;
+    --color-warning-bg: #271d08;
+    --color-warning-border: #78350f;
+    --color-danger: #f87171;
+    --color-danger-bg: #2a0f0f;
+    --color-danger-border: #7f1d1d;
+    --color-info: #38bdf8;
+    --color-info-bg: #0a1e2a;
+    --color-info-border: #075985;
+    --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
     color-scheme: dark;
   }
-  
+
   body {
-    @apply bg-[#0b0f19] text-slate-100 antialiased;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Accessibility focus indicator ring */
+  * {
+    border-color: var(--color-border);
+  }
+
   *:focus-visible {
-    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-[#0b0f19];
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 }
 
-/* Custom scrollbars for telemetry dashboards */
-::-webkit-scrollbar {
+/* ─────────────────────────────────────────────────────────
+   Semantic design token utilities via @layer components
+   ─────────────────────────────────────────────────────── */
+@layer components {
+  /* Surfaces */
+  .bg-page    { background-color: var(--color-bg); }
+  .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-2 { background-color: var(--color-surface-2); }
+
+  /* Borders */
+  .border-default { border-color: var(--color-border); }
+  .border-strong  { border-color: var(--color-border-strong); }
+
+  /* Text */
+  .text-primary   { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-placeholder { color: var(--color-text-placeholder); }
+
+  /* Accent */
+  .text-accent   { color: var(--color-accent); }
+  .bg-accent     { background-color: var(--color-accent); }
+  .bg-accent-tint { background-color: var(--color-accent-bg); }
+
+  /* Status */
+  .status-success { color: var(--color-success); background: var(--color-success-bg); border-color: var(--color-success-border); }
+  .status-warning { color: var(--color-warning); background: var(--color-warning-bg); border-color: var(--color-warning-border); }
+  .status-danger  { color: var(--color-danger);  background: var(--color-danger-bg);  border-color: var(--color-danger-border); }
+  .status-info    { color: var(--color-info);    background: var(--color-info-bg);    border-color: var(--color-info-border); }
+  .status-accent  { color: var(--color-accent);  background: var(--color-accent-bg);  border-color: var(--color-accent-border); }
+
+  /* Card */
+  .card-base {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Scrollbars — themed
+   ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-placeholder); }
+
+/* ─────────────────────────────────────────────────────────
+   Live status pulse — subtle, single color
+   ─────────────────────────────────────────────────────── */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-dot {
+  display: inline-block;
   width: 6px;
   height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0b0f19;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1f2937;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #374151;
-}
-
-/* Glassmorphism panel styling */
-.command-glass {
-  background: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.command-card {
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 0.75rem;
-}
-
-.command-card-hover {
-  transition: all 0.2s ease-in-out;
-}
-
-.command-card-hover:hover {
-  border-color: #374151;
-  transform: translateY(-1px);
+  border-radius: 9999px;
+  background-color: var(--color-success);
+  animation: live-pulse 2.4s ease-in-out infinite;
 }

@@ -10,59 +10,50 @@ export function SubmissionsPage() {
   const submissions = MOCK_TEAMS.filter((t) => t.submission);
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-          Assigned Submissions Queue
-        </h1>
-        <p className="text-sm text-slate-400">
-          Review candidate codebases, live demos, and project summaries.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Submissions</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Review codebases, demos, and project summaries.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {submissions.map((t) => (
-          <Card key={t.id} className="p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="brand">{t.track}</Badge>
-                  <span className="text-xs font-mono text-indigo-400">{t.name}</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-100">{t.submission.description}</h3>
-                <div className="flex items-center gap-4 text-xs">
+          <div key={t.id} className="card-base p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="brand" size="sm">{t.track}</Badge>
+                <span className="text-xs font-mono text-[--color-text-secondary]">{t.name}</span>
+              </div>
+              <p className="text-sm font-semibold text-[--color-text-primary]">{t.submission.description}</p>
+              <div className="flex items-center gap-4 text-xs">
+                <a
+                  href={t.submission.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 text-[--color-text-secondary] hover:text-[--color-accent] transition-colors font-mono"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                  Code
+                </a>
+                {t.submission.demoUrl && (
                   <a
-                    href={t.submission.githubUrl}
+                    href={t.submission.demoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-slate-400 hover:text-indigo-400 flex items-center gap-1 font-mono"
+                    className="flex items-center gap-1.5 text-[--color-accent] hover:underline font-mono"
                   >
-                    <Github className="w-4 h-4" />
-                    GitHub Repo
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Demo
                   </a>
-                  {t.submission.demoUrl && (
-                    <a
-                      href={t.submission.demoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-indigo-400 hover:underline flex items-center gap-1 font-mono"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Live Demo
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Link to="/judge/evaluation">
-                  <Button variant="primary" icon={ClipboardCheck}>
-                    Evaluate Project
-                  </Button>
-                </Link>
+                )}
               </div>
             </div>
-          </Card>
+            <Link to="/judge/evaluation">
+              <Button variant="primary" size="sm" icon={ClipboardCheck}>Evaluate</Button>
+            </Link>
+          </div>
         ))}
       </div>
     </div>

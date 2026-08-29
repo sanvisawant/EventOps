@@ -18,14 +18,7 @@ export function AnnouncementsPage() {
   const handlePublish = async (e) => {
     e.preventDefault();
     if (!title.trim() || !message.trim()) return;
-
-    await announcementService.publishAnnouncement({
-      title,
-      message,
-      priority,
-      targetRole,
-    });
-
+    await announcementService.publishAnnouncement({ title, message, priority, targetRole });
     const updated = await announcementService.getAnnouncements();
     setAnnouncements([...updated]);
     setTitle('');
@@ -33,90 +26,87 @@ export function AnnouncementsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-5 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-          Broadcast Announcement Center
-        </h1>
-        <p className="text-sm text-slate-400">
-          Push real-time notifications to participant feeds, judges, or venue screens.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Announcements</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Publish notices to participants, judges, or all attendees.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Publish Announcement Form */}
-        <Card title="New Broadcast Message" subtitle="Target all or specific roles" className="lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Compose form */}
+        <Card title="New Announcement" subtitle="Target a specific audience" className="lg:col-span-1">
           <form onSubmit={handlePublish} className="space-y-4">
             <Input
-              label="Announcement Title"
-              placeholder="e.g. Mentor Office Hours starting in Lab 204"
+              label="Title"
+              placeholder="e.g. Mentor office hours open"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               icon={Megaphone}
             />
-
             <Select
-              label="Priority Level"
+              label="Priority"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
               options={[
-                { label: 'CRITICAL (High Urgency)', value: 'CRITICAL' },
-                { label: 'IMPORTANT (General Notice)', value: 'IMPORTANT' },
-                { label: 'INFO (Schedule Update)', value: 'INFO' },
+                { label: 'Critical — high urgency', value: 'CRITICAL' },
+                { label: 'Important — general notice', value: 'IMPORTANT' },
+                { label: 'Info — schedule update', value: 'INFO' },
               ]}
             />
-
             <Select
-              label="Audience Scope"
+              label="Audience"
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
               options={[
-                { label: 'All Event Attendees (Broadcast)', value: 'ALL' },
-                { label: 'Participants Only', value: 'PARTICIPANT' },
-                { label: 'Judges Only', value: 'JUDGE' },
+                { label: 'All attendees', value: 'ALL' },
+                { label: 'Participants only', value: 'PARTICIPANT' },
+                { label: 'Judges only', value: 'JUDGE' },
               ]}
             />
-
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                Message Body
+              <label className="block text-xs font-medium text-[--color-text-secondary]">
+                Message
               </label>
               <textarea
                 rows={4}
-                className="w-full rounded-lg bg-slate-950 border border-slate-800 focus:border-indigo-500 text-slate-100 text-sm p-3 font-sans"
-                placeholder="Enter complete announcement details..."
+                className="w-full rounded-md bg-[--color-surface-2] border border-[--color-border] text-[--color-text-primary] text-sm p-3 placeholder:text-[--color-text-placeholder] focus:outline-none focus:ring-2 focus:ring-[--color-accent] focus:border-transparent transition-colors resize-y"
+                placeholder="Enter full announcement text…"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
             </div>
-
             <Button type="submit" variant="primary" className="w-full" icon={Send}>
-              Broadcast Message Now
+              Publish
             </Button>
           </form>
         </Card>
 
-        {/* Live Broadcast Feed */}
-        <Card title="Published Announcements History" subtitle="Live feed visible across user dashboards" className="lg:col-span-2">
-          <div className="space-y-4">
+        {/* History */}
+        <Card title="Published" subtitle="Announcement history" className="lg:col-span-2">
+          <div className="space-y-3">
             {announcements.map((anc) => (
-              <div key={anc.id} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div
+                key={anc.id}
+                className="p-4 rounded-md border border-[--color-border] bg-[--color-surface-2] space-y-2"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Badge variant={anc.priority === 'CRITICAL' ? 'danger' : 'brand'}>
+                    <Badge variant={anc.priority === 'CRITICAL' ? 'danger' : anc.priority === 'IMPORTANT' ? 'warning' : 'info'} size="sm">
                       {anc.priority}
                     </Badge>
-                    <Badge variant="neutral">Target: {anc.targetRole}</Badge>
+                    <Badge variant="neutral" size="sm">{anc.targetRole}</Badge>
                   </div>
-                  <span className="text-xs font-mono text-slate-500">
+                  <time className="text-xs font-mono text-[--color-text-placeholder]">
                     {new Date(anc.publishedAt).toLocaleTimeString()}
-                  </span>
+                  </time>
                 </div>
-                <h3 className="text-base font-bold text-slate-100">{anc.title}</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">{anc.message}</p>
-                <div className="text-xs text-slate-500 pt-2 border-t border-slate-900 font-mono">
-                  By: {anc.author}
-                </div>
+                <p className="text-sm font-semibold text-[--color-text-primary]">{anc.title}</p>
+                <p className="text-sm text-[--color-text-secondary] leading-relaxed">{anc.message}</p>
+                <p className="text-xs text-[--color-text-placeholder] pt-1.5 border-t border-[--color-border] font-mono">
+                  By {anc.author}
+                </p>
               </div>
             ))}
           </div>

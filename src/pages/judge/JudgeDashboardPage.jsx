@@ -13,67 +13,50 @@ export function JudgeDashboardPage() {
   const assignedSubmissions = MOCK_TEAMS.filter((t) => t.submission);
 
   return (
-    <div className="space-y-6">
-      <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="max-w-5xl mx-auto space-y-5 pb-8">
+      {/* Header */}
+      <div className="card-base p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant="brand">JUDGE PORTAL</Badge>
-            <span className="text-xs font-mono text-slate-400">{activeUser.organization}</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <Badge variant="brand">Judge</Badge>
+            <span className="text-xs font-mono text-[--color-text-secondary]">{activeUser.organization}</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-            Welcome, {activeUser.name}!
+          <h1 className="text-xl font-semibold text-[--color-text-primary] tracking-tight">
+            Welcome, {activeUser.name.split(' ')[0]}
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Review assigned project submissions, grade against the structured 4-criteria rubric, and submit live scores.
+          <p className="text-sm text-[--color-text-secondary] mt-0.5">
+            Review submitted projects and submit rubric evaluations.
           </p>
         </div>
-
         <Link to="/judge/evaluation">
-          <Button variant="primary" icon={ClipboardCheck}>
-            Start Rubric Evaluation
-          </Button>
+          <Button variant="primary" icon={ClipboardCheck}>Evaluate</Button>
         </Link>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard
-          title="Assigned Submissions"
-          value={assignedSubmissions.length}
-          subtitle="Projects in your queue"
-          icon={FileCheck}
-          color="indigo"
-        />
-        <StatCard
-          title="Evaluations Completed"
-          value="2"
-          subtitle="Rubric scores submitted"
-          icon={ClipboardCheck}
-          color="emerald"
-        />
-        <StatCard
-          title="Average Score Given"
-          value="8.65 / 10"
-          subtitle="Your scoring calibration"
-          icon={Award}
-          color="amber"
-        />
+        <StatCard title="Assigned" value={assignedSubmissions.length} subtitle="Projects in queue" icon={FileCheck} />
+        <StatCard title="Completed" value="2" subtitle="Rubric scores submitted" icon={ClipboardCheck} />
+        <StatCard title="Avg Score" value="8.65" subtitle="Out of 10" icon={Award} />
       </div>
 
-      <Card title="Assigned Queue" subtitle="Click to evaluate against rubric criteria">
-        <div className="space-y-3">
+      {/* Assignment queue */}
+      <Card title="Submission Queue" subtitle="Click to evaluate against rubric criteria">
+        <div className="space-y-2">
           {assignedSubmissions.map((team) => (
-            <div key={team.id} className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+            <div
+              key={team.id}
+              className="flex items-center justify-between p-4 rounded-md border border-[--color-border] bg-[--color-surface-2]"
+            >
               <div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="brand">{team.track}</Badge>
-                  <span className="text-xs font-mono text-slate-400">Team: {team.name}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge variant="brand" size="sm">{team.track}</Badge>
+                  <span className="text-xs text-[--color-text-secondary] font-mono">{team.name}</span>
                 </div>
-                <h4 className="text-base font-bold text-slate-100 mt-1">{team.submission?.description}</h4>
+                <p className="text-sm font-medium text-[--color-text-primary]">{team.submission?.description}</p>
               </div>
               <Link to="/judge/evaluation">
-                <Button size="sm" variant="primary" icon={ArrowRight}>
-                  Grade Rubric
-                </Button>
+                <Button size="sm" variant="primary" icon={ArrowRight}>Grade</Button>
               </Link>
             </div>
           ))}

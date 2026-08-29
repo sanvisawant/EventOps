@@ -2,40 +2,42 @@ import React from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { MOCK_ANNOUNCEMENTS } from '../../data/mockData';
-import { Megaphone } from 'lucide-react';
 
 export function ParticipantAnnouncementsPage() {
   return (
-    <div className="space-y-6">
+    <div className="max-w-3xl mx-auto space-y-4 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <Megaphone className="w-6 h-6 text-indigo-400" />
-          Event Broadcast Feed
-        </h1>
-        <p className="text-sm text-slate-400">
-          Official real-time updates and emergency notifications from the Event Command Desk.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Announcements</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Real-time updates and notices from the organizer team.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {MOCK_ANNOUNCEMENTS.map((anc) => (
-          <Card key={anc.id} className="border-l-4 border-l-indigo-500">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Badge variant={anc.priority === 'CRITICAL' ? 'danger' : 'brand'}>
+          <div
+            key={anc.id}
+            className="card-base p-4 space-y-2 border-l-2 border-[--color-accent]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant={anc.priority === 'CRITICAL' ? 'danger' : anc.priority === 'IMPORTANT' ? 'warning' : 'info'}
+                  size="sm"
+                >
                   {anc.priority}
                 </Badge>
-                <span className="text-xs font-mono text-slate-500">
-                  {new Date(anc.publishedAt).toLocaleTimeString()}
-                </span>
               </div>
-              <h3 className="text-lg font-bold text-slate-100">{anc.title}</h3>
-              <p className="text-sm text-slate-300 leading-relaxed">{anc.message}</p>
-              <div className="text-xs text-slate-500 pt-2 border-t border-slate-800 font-mono">
-                Author: {anc.author}
-              </div>
+              <time className="text-xs font-mono text-[--color-text-placeholder]">
+                {new Date(anc.publishedAt).toLocaleTimeString()}
+              </time>
             </div>
-          </Card>
+            <p className="text-sm font-semibold text-[--color-text-primary]">{anc.title}</p>
+            <p className="text-sm text-[--color-text-secondary] leading-relaxed">{anc.message}</p>
+            <p className="text-xs text-[--color-text-placeholder] pt-2 border-t border-[--color-border] font-mono">
+              {anc.author}
+            </p>
+          </div>
         ))}
       </div>
     </div>

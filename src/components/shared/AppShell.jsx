@@ -4,15 +4,11 @@ import { SidebarNav } from './SidebarNav';
 
 export function AppShell({ children }) {
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans">
+    <div className="flex flex-col min-h-screen bg-[--color-bg]">
       <TopNavbar />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         <SidebarNav />
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full"
-        >
+        <main className="flex-1 overflow-y-auto p-6 bg-[--color-bg]">
           {children}
         </main>
       </div>

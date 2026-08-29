@@ -10,11 +10,11 @@ export function ProtectedRoute({ allowedRoles = [], children }) {
   // 1. Session Restoration Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0b0f19] flex flex-col items-center justify-center space-y-4">
-        <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 animate-pulse">
-          <Activity className="w-6 h-6 text-white" />
+      <div className="min-h-screen bg-[--color-bg] flex flex-col items-center justify-center space-y-4">
+        <div className="w-10 h-10 rounded-lg bg-[--color-accent] flex items-center justify-center animate-pulse">
+          <Activity className="w-5 h-5 text-white" aria-hidden="true" />
         </div>
-        <p className="text-sm font-mono text-slate-400">Verifying session credentials...</p>
+        <p className="text-sm text-[--color-text-secondary]">Verifying session…</p>
       </div>
     );
   }

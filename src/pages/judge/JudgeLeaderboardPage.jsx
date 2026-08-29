@@ -3,43 +3,42 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { MOCK_TEAMS } from '../../data/mockData';
 import { compileLeaderboard } from '../../utils/scoring';
-import { Award } from 'lucide-react';
 
 export function JudgeLeaderboardPage() {
   const leaderboard = compileLeaderboard(MOCK_TEAMS);
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-3xl mx-auto space-y-4 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <Award className="w-6 h-6 text-amber-400" />
-          Evaluation Standings Summary
-        </h1>
-        <p className="text-sm text-slate-400">
-          Overview of scored project submissions across all tracks.
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Standings</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Aggregate scores across all tracks.
         </p>
       </div>
 
-      <Card title="Current Standings" subtitle="Live aggregate scores">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm font-mono">
-            <thead className="text-xs uppercase bg-slate-950 text-slate-400 border-b border-slate-800">
-              <tr>
-                <th className="px-4 py-3 text-center">Rank</th>
-                <th className="px-4 py-3">Team</th>
-                <th className="px-4 py-3">Track</th>
-                <th className="px-4 py-3 text-right">Weighted Score</th>
+      <Card title="Current Standings">
+        <div className="overflow-x-auto -mx-5 -mb-4">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-[--color-border] bg-[--color-surface-2]">
+                {['Rank', 'Team', 'Track', 'Score'].map((h) => (
+                  <th key={h} className="px-5 py-3 text-xs font-semibold text-[--color-text-secondary] uppercase tracking-wide">
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-[--color-border]">
               {leaderboard.map((t) => (
-                <tr key={t.id} className="hover:bg-slate-800/50">
-                  <td className="px-4 py-4 text-center font-bold">#{t.rank}</td>
-                  <td className="px-4 py-4 font-bold text-slate-100">{t.name}</td>
-                  <td className="px-4 py-4 font-sans">
-                    <Badge variant="brand">{t.track}</Badge>
+                <tr key={t.id} className="hover:bg-[--color-surface-2] transition-colors">
+                  <td className="px-5 py-3 font-mono font-bold text-[--color-text-secondary]">
+                    #{t.rank}
                   </td>
-                  <td className="px-4 py-4 text-right text-indigo-400 font-bold">
+                  <td className="px-5 py-3 font-semibold text-[--color-text-primary]">{t.name}</td>
+                  <td className="px-5 py-3">
+                    <Badge variant="brand" size="sm">{t.track}</Badge>
+                  </td>
+                  <td className="px-5 py-3 text-right font-mono font-bold text-[--color-accent]">
                     {t.weightedScore} / 10
                   </td>
                 </tr>

@@ -1,69 +1,53 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Shield, User, Award, Layers } from 'lucide-react';
+import { Shield, User, Award } from 'lucide-react';
+
+const ROLE_CONFIGS = [
+  { id: 'ORGANIZER', label: 'Organizer', icon: Shield },
+  { id: 'PARTICIPANT', label: 'Participant', icon: User },
+  { id: 'JUDGE', label: 'Judge', icon: Award },
+];
 
 export function RoleSwitcher() {
   const { activeRole, switchDemoRole, toggleDemoMode, isDemoMode, ROLES, getDefaultRouteForRole } = useAuth();
   const navigate = useNavigate();
 
-  const roleConfigs = [
-    {
-      id: ROLES.ORGANIZER,
-      label: 'Organizer Command Center',
-      icon: Shield,
-      badgeColor: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
-    },
-    {
-      id: ROLES.PARTICIPANT,
-      label: 'Participant Dashboard',
-      icon: User,
-      badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    },
-    {
-      id: ROLES.JUDGE,
-      label: 'Judge Portal',
-      icon: Award,
-      badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    },
-  ];
-
   const handleRoleSelect = (roleId) => {
-    if (!isDemoMode) {
-      toggleDemoMode(); // Enable demo mode when selecting role switcher
-    }
+    if (!isDemoMode) toggleDemoMode();
     switchDemoRole(roleId);
     navigate(getDefaultRouteForRole(roleId));
   };
 
   return (
-    <div className="flex items-center gap-1.5 p-1 bg-slate-950 border border-slate-800 rounded-xl">
-      <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 text-slate-400 text-xs font-semibold uppercase tracking-wider">
-        <Layers className="w-3.5 h-3.5 text-indigo-400" />
-        <span>Demo:</span>
-      </div>
-      <div className="flex items-center gap-1">
-        {roleConfigs.map((role) => {
-          const Icon = role.icon;
-          const isActive = activeRole === role.id;
-
-          return (
-            <button
-              key={role.id}
-              onClick={() => handleRoleSelect(role.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
-                isActive
-                  ? `${role.badgeColor} border font-semibold shadow-sm`
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent'
-              }`}
-              title={`Switch view to ${role.label}`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{role.id}</span>
-            </button>
-          );
-        })}
-      </div>
+    <div
+      className="flex items-center gap-1 px-1 py-1 rounded-md bg-[--color-surface-2] border border-[--color-border]"
+      role="group"
+      aria-label="Switch demo role"
+    >
+      <span className="hidden sm:block text-xs text-[--color-text-placeholder] pr-1 pl-1">Demo:</span>
+      {ROLE_CONFIGS.map((role) => {
+        const Icon = role.icon;
+        const isActive = activeRole === role.id;
+        return (
+          <button
+            key={role.id}
+            onClick={() => handleRoleSelect(role.id)}
+            title={`View as ${role.label}`}
+            aria-pressed={isActive}
+            className={[
+              'flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer',
+              isActive
+                ? 'bg-[--color-surface] text-[--color-text-primary] shadow-sm border border-[--color-border]'
+                : 'text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface]',
+            ].join(' ')}
+          >
+            <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            <span className="hidden md:inline">{role.label}</span>
+            <span className="md:hidden">{role.id[0]}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

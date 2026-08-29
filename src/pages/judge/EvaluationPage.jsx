@@ -7,10 +7,10 @@ import { MOCK_RUBRIC_CRITERIA, MOCK_TEAMS } from '../../data/mockData';
 import { calculateWeightedScore } from '../../utils/scoring';
 import { validateScore } from '../../utils/validation';
 import { judgingService } from '../../services/judging/judgingService';
-import { ClipboardCheck, Star, Send, CheckCircle } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 export function EvaluationPage() {
-  const selectedTeam = MOCK_TEAMS[0]; // Synthetix AI
+  const selectedTeam = MOCK_TEAMS[0];
   const [scores, setScores] = useState({
     crit_innovation: 9,
     crit_complexity: 9,
@@ -24,89 +24,78 @@ export function EvaluationPage() {
 
   const handleScoreChange = (critId, val) => {
     const numeric = parseFloat(val) || 0;
-    setScores((prev) => ({
-      ...prev,
-      [critId]: Math.min(10, Math.max(0, numeric)),
-    }));
+    setScores((prev) => ({ ...prev, [critId]: Math.min(10, Math.max(0, numeric)) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate score bounds
     for (const [id, score] of Object.entries(scores)) {
       const v = validateScore(score, 0, 10);
-      if (!v.isValid) {
-        setResultMsg({ success: false, message: v.error });
-        return;
-      }
+      if (!v.isValid) { setResultMsg({ success: false, message: v.error }); return; }
     }
-
-    const res = await judgingService.submitEvaluation({
-      teamId: selectedTeam.id,
-      scores,
-      feedback,
-    });
-
+    const res = await judgingService.submitEvaluation({ teamId: selectedTeam.id, scores, feedback });
     setResultMsg(res);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl mx-auto space-y-5 pb-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
-          <ClipboardCheck className="w-6 h-6 text-indigo-400" />
-          Structured Rubric Evaluator
-        </h1>
-        <p className="text-sm text-slate-400">
-          Evaluating Team: <span className="font-bold text-slate-200">{selectedTeam.name}</span> ({selectedTeam.track})
+        <h1 className="text-lg font-semibold text-[--color-text-primary]">Evaluate</h1>
+        <p className="text-sm text-[--color-text-secondary] mt-0.5">
+          Scoring: <span className="text-[--color-text-primary] font-medium">{selectedTeam.name}</span>
+          {' '}· {selectedTeam.track}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Rubric Scoring Form */}
-        <Card title="Weighted Rubric Criteria" subtitle="Scores range 0.0 - 10.0" className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Rubric form */}
+        <Card title="Rubric Criteria" subtitle="Score 0.0–10.0 per criterion" className="lg:col-span-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {MOCK_RUBRIC_CRITERIA.map((crit) => (
-              <div key={crit.id} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-base font-bold text-slate-100">{crit.name}</h4>
-                      <Badge variant="brand">Weight: {(crit.weight * 100).toFixed(0)}%</Badge>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-0.5">{crit.description}</p>
+              <div
+                key={crit.id}
+                className="flex items-start justify-between gap-4 p-4 rounded-md border border-[--color-border] bg-[--color-surface-2]"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-semibold text-[--color-text-primary]">{crit.name}</p>
+                    <Badge variant="brand" size="sm">
+                      {(crit.weight * 100).toFixed(0)}%
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="0"
-                      max="10"
-                      step="0.5"
-                      className="w-20 rounded-lg bg-slate-900 border border-slate-700 text-center font-mono font-bold text-indigo-400 text-lg py-1.5"
-                      value={scores[crit.id] ?? 0}
-                      onChange={(e) => handleScoreChange(crit.id, e.target.value)}
-                    />
-                    <span className="text-xs text-slate-500 font-mono">/ 10</span>
-                  </div>
+                  <p className="text-xs text-[--color-text-secondary]">{crit.description}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    className="w-20 rounded-md bg-[--color-surface] border border-[--color-border] text-center font-mono font-bold text-[--color-accent] text-base py-1.5 focus:outline-none focus:ring-2 focus:ring-[--color-accent]"
+                    value={scores[crit.id] ?? 0}
+                    onChange={(e) => handleScoreChange(crit.id, e.target.value)}
+                    aria-label={`Score for ${crit.name}`}
+                  />
+                  <span className="text-xs text-[--color-text-placeholder] font-mono">/ 10</span>
                 </div>
               </div>
             ))}
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                Constructive Qualitative Feedback
+              <label className="block text-xs font-medium text-[--color-text-secondary]">
+                Feedback
               </label>
               <textarea
                 rows={3}
-                className="w-full rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm p-3"
+                className="w-full rounded-md bg-[--color-surface-2] border border-[--color-border] text-[--color-text-primary] text-sm p-3 placeholder:text-[--color-text-placeholder] focus:outline-none focus:ring-2 focus:ring-[--color-accent] focus:border-transparent transition-colors resize-y"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Provide constructive feedback…"
               />
             </div>
 
             <Button type="submit" variant="primary" className="w-full" icon={Send}>
-              Submit Live Evaluation
+              Submit Evaluation
             </Button>
 
             {resultMsg && (
@@ -117,17 +106,16 @@ export function EvaluationPage() {
           </form>
         </Card>
 
-        {/* Live Aggregate Telemetry Card */}
-        <Card title="Live Score Aggregate" subtitle="Calculated total weighted score">
-          <div className="p-6 bg-slate-950 rounded-xl border border-slate-800 text-center space-y-3">
-            <div className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-              Total Weighted Score
+        {/* Score aggregate */}
+        <Card title="Weighted Total">
+          <div className="py-6 text-center space-y-2">
+            <p className="text-xs text-[--color-text-secondary] font-medium uppercase tracking-wide">Total Score</p>
+            <div className="text-5xl font-bold font-mono text-[--color-accent] tracking-tight">
+              {weightedScore}
             </div>
-            <div className="text-4xl font-extrabold font-mono text-indigo-400 tracking-tight">
-              {weightedScore} <span className="text-lg text-slate-500">/ 10</span>
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed pt-2 border-t border-slate-900">
-              Submitting this score will update the team's standing on the Live Leaderboard immediately.
+            <p className="text-sm text-[--color-text-secondary]">/ 10</p>
+            <p className="text-xs text-[--color-text-secondary] pt-4 border-t border-[--color-border] leading-relaxed">
+              Submitting will immediately update standings on the leaderboard.
             </p>
           </div>
         </Card>
