@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDemoMode, setIsDemoMode] = useState(true); // Default to Demo Mode for interactive evaluation
+  const [isDemoMode, setIsDemoMode] = useState(false); // Default to Authenticated Mode requiring Login
   const [demoRole, setDemoRole] = useState(ROLES.ORGANIZER);
   const [authError, setAuthError] = useState(null);
 

@@ -33,7 +33,10 @@ import { EvaluationPage } from './pages/judge/EvaluationPage';
 import { JudgeLeaderboardPage } from './pages/judge/JudgeLeaderboardPage';
 
 function RootRedirect() {
-  const { activeRole, getDefaultRouteForRole } = useAuth();
+  const { isAuthenticated, isDemoMode, activeRole, getDefaultRouteForRole } = useAuth();
+  if (!isAuthenticated && !isDemoMode) {
+    return <Navigate to="/login" replace />;
+  }
   return <Navigate to={getDefaultRouteForRole(activeRole)} replace />;
 }
 

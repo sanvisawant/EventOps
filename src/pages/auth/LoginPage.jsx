@@ -6,7 +6,7 @@ import { Input } from '../../components/ui/Input';
 import { Alert } from '../../components/ui/Alert';
 import { useAuth } from '../../context/AuthContext';
 import { validateEmail } from '../../utils/validation';
-import { Activity, ShieldCheck, Layers } from 'lucide-react';
+import { Activity, ShieldCheck, Layers, Shield, User, Award } from 'lucide-react';
 
 export function LoginPage() {
   const { login, getDefaultRouteForRole, isDemoMode, toggleDemoMode, ROLES } = useAuth();
@@ -16,6 +16,12 @@ export function LoginPage() {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const presets = [
+    { role: 'ORGANIZER', label: 'Organizer', email: 'sanvi.organizer@eventops.io', icon: Shield },
+    { role: 'PARTICIPANT', label: 'Participant', email: 'aarav.sharma@example.com', icon: User },
+    { role: 'JUDGE', label: 'Judge', email: 'vikram.rao@techfest.org', icon: Award },
+  ];
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -44,6 +50,11 @@ export function LoginPage() {
     }
   };
 
+  const handlePresetSelect = (presetEmail) => {
+    setEmail(presetEmail);
+    setPassword('password123');
+  };
+
   const handleEnterDemoMode = () => {
     if (!isDemoMode) toggleDemoMode();
     navigate('/organizer');
@@ -67,6 +78,34 @@ export function LoginPage() {
         <Card title="Console Authentication" subtitle="Sign in to your account">
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             {error && <Alert variant="danger">{error}</Alert>}
+
+            {/* Quick Demo Preset Accounts */}
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                Quick Persona Presets:
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {presets.map((p) => {
+                  const Icon = p.icon;
+                  const isSelected = email === p.email;
+                  return (
+                    <button
+                      key={p.role}
+                      type="button"
+                      onClick={() => handlePresetSelect(p.email)}
+                      className={`px-2 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center justify-center gap-1 border transition-all ${
+                        isSelected
+                          ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 font-bold'
+                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900 hover:text-slate-200'
+                      }`}
+                    >
+                      <Icon className="w-3 h-3" />
+                      <span>{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <Input
               label="Email Address"
