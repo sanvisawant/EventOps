@@ -146,7 +146,7 @@ export function AppRoutes() {
       <Route
         path="/participant/matchmaking"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT]}>
+          <ProtectedRoute allowedRoles={[ROLES.PARTICIPANT, ROLES.ORGANIZER]}>
             <AppShell>
               <MatchmakingPage />
             </AppShell>
@@ -198,7 +198,7 @@ export function AppRoutes() {
       <Route
         path="/judge/submissions"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE, ROLES.ORGANIZER]}>
             <AppShell>
               <SubmissionsPage />
             </AppShell>

@@ -531,7 +531,7 @@ export function OrganizerDashboardPage() {
             variant="secondary"
             className="w-full justify-start text-xs"
             icon={Users}
-            onClick={() => handleActionNavigate('/organizer')}
+            onClick={() => handleActionNavigate('/participant/matchmaking')}
           >
             View Teams
           </Button>
@@ -540,7 +540,7 @@ export function OrganizerDashboardPage() {
             variant="secondary"
             className="w-full justify-start text-xs"
             icon={Award}
-            onClick={() => handleActionNavigate('/organizer/leaderboard')}
+            onClick={() => handleActionNavigate('/judge/submissions')}
           >
             View Judging
           </Button>

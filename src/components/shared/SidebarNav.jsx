@@ -30,13 +30,15 @@ const NAV_GROUPS = {
       label: 'Event',
       items: [
         { to: '/organizer/checkin', label: 'Check-in', icon: QrCode },
-        { to: '/organizer/support', label: 'Support', icon: LifeBuoy, badge: '3' },
+        { to: '/participant/matchmaking', label: 'Teams & Matching', icon: Users },
+        { to: '/organizer/support', label: 'Support', icon: LifeBuoy, badge: '7' },
         { to: '/organizer/announcements', label: 'Announcements', icon: Megaphone },
       ],
     },
     {
       label: 'Evaluation',
       items: [
+        { to: '/judge/submissions', label: 'Submissions', icon: FileCheck },
         { to: '/organizer/leaderboard', label: 'Leaderboard', icon: Trophy },
       ],
     },

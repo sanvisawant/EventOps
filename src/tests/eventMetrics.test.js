@@ -71,6 +71,7 @@ describe('Event Metrics & Derived Logic Engine', () => {
     expect(judgingBottleneckRec?.title).toBe('Judging Bottleneck');
     expect(judgingBottleneckRec?.description).toContain('18 submissions are waiting for evaluation');
     expect(judgingBottleneckRec?.recommendedAction).toBe('Rebalance judge assignments.');
+    expect(judgingBottleneckRec?.actionRoute).toBe('/judge/submissions');
   });
 
   it('6. should generate a deterministic recommendation for unmatched participants gap', () => {
@@ -92,5 +93,6 @@ describe('Event Metrics & Derived Logic Engine', () => {
     expect(teamGapRec?.title).toBe('Team Formation Gap');
     expect(teamGapRec?.description).toContain('14 participants are currently unmatched');
     expect(teamGapRec?.recommendedAction).toBe('Open the smart matchmaking pool.');
+    expect(teamGapRec?.actionRoute).toBe('/participant/matchmaking');
   });
 });

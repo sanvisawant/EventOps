@@ -84,7 +84,7 @@ export function calculateEventHealth({
       description: `${pendingJudgments} submissions are waiting for evaluation.`,
       recommendedAction: 'Rebalance judge assignments.',
       actionLabel: 'Review Judging',
-      actionRoute: '/organizer/leaderboard',
+      actionRoute: '/judge/submissions',
     });
   }
 
@@ -98,7 +98,7 @@ export function calculateEventHealth({
       description: `${unmatchedParticipants} participants are currently unmatched.`,
       recommendedAction: 'Open the smart matchmaking pool.',
       actionLabel: 'View Teams',
-      actionRoute: '/organizer',
+      actionRoute: '/participant/matchmaking',
     });
   }
 
