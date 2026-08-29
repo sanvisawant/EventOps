@@ -152,12 +152,12 @@ export const checkinService = {
   resetCheckInState() {
     checkInLogs = [...MOCK_CHECKIN_LOGS];
     MOCK_USERS.forEach((u) => {
-      if (u.id === 'usr_part_1' || u.id === 'usr_part_4') {
+      if (u.id === 'usr_part_2' || u.id === 'usr_part_3') {
+        u.isCheckedIn = true;
+      } else {
         u.isCheckedIn = false;
         u.checkInTime = null;
         u.checkInGate = null;
-      } else if (u.id === 'usr_part_2' || u.id === 'usr_part_3') {
-        u.isCheckedIn = true;
       }
     });
     MOCK_EVENT.stats.totalCheckedIn = 214;

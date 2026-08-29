@@ -47,14 +47,14 @@ describe('QR Attendance & Gate Verification Service Engine', () => {
   });
 
   it('6. should record a valid ISO timestamp upon successful check-in', async () => {
-    const res = await checkinService.processQrCheckIn('EVENTOPS:P-1045:EVT-2026', 'Workshop Gate'); // Rohan
+    const res = await checkinService.processQrCheckIn('EVENTOPS:P-1046:EVT-2026', 'Workshop Gate'); // Aarav Mehta
     expect(res.success).toBe(true);
     expect(res.log.scannedAt).toBeDefined();
     expect(new Date(res.log.scannedAt).getTime()).not.toBeNaN();
   });
 
   it('7. should accurately record gate information in the check-in log', async () => {
-    const res = await checkinService.processQrCheckIn('EVENTOPS:P-1045:EVT-2026', 'North Gate');
+    const res = await checkinService.processQrCheckIn('EVENTOPS:P-1046:EVT-2026', 'North Gate');
     expect(res.success).toBe(true);
     expect(res.log.gate).toBe('North Gate');
     expect(res.participant.checkInGate).toBe('North Gate');
