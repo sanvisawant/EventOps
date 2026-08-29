@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { StatCard } from '../../components/ui/StatCard';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { StatusIndicator } from '../../components/ui/StatusIndicator';
+import { checkinService } from '../../services/checkinService';
 import {
   MOCK_EVENT,
   MOCK_SUPPORT_TICKETS,
@@ -41,6 +42,14 @@ import {
 
 export function OrganizerDashboardPage() {
   const navigate = useNavigate();
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const unsub = checkinService.subscribe(() => {
+      setTick((t) => t + 1);
+    });
+    return unsub;
+  }, []);
 
   // Centralized Data & Derived Metrics
   const event = MOCK_EVENT;
